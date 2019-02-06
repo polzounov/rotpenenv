@@ -10,8 +10,7 @@ class RotaryPendulumPyBulletRobot(MJCFBasedRobot):
     def __init__(self, swingup=True):
         self.swingup = swingup
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        print(dir_path+'/rotary_pendulum.xml')
-        MJCFBasedRobot.__init__(self, '/Users/kirillpolzunov/code/rotpenenv/rotary_pendulum.xml', 'cart', action_dim=1, obs_dim=4)
+        MJCFBasedRobot.__init__(self, dir_path+'/rotary_pendulum.xml', 'cart', action_dim=1, obs_dim=4)
 
     def robot_specific_reset(self, bullet_client):
         self._p = bullet_client

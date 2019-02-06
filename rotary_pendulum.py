@@ -7,7 +7,6 @@ class RotaryPendulumEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self, swingup=False):
         utils.EzPickle.__init__(self)
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        print(dir_path+'/rotary_pendulum.xml')
         mujoco_env.MujocoEnv.__init__(self, dir_path+'/rotary_pendulum.xml', 2)
         self.swingup = swingup
 
