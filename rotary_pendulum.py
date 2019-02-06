@@ -1,13 +1,14 @@
 from gym.envs.mujoco import mujoco_env
 from gym import utils
 import numpy as np
-import time
-
+import os 
 
 class RotaryPendulumEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self, swingup=False):
         utils.EzPickle.__init__(self)
-        mujoco_env.MujocoEnv.__init__(self, '/Users/kirillpolzunov/code/rotpenenv/rotary_pendulum.xml', 2)
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        print(dir_path+'/rotary_pendulum.xml')
+        mujoco_env.MujocoEnv.__init__(self, dir_path+'/rotary_pendulum.xml', 2)
         self.swingup = swingup
 
     def step(self, a):
@@ -33,7 +34,16 @@ class RotaryPendulumEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         
         self.set_state(qpos, qvel)
         theta, alpha, theta_dot, alpha_dot = self._get_obs()
-        return np.array([np.cos(theta), np.sin(theta), np.cos(alpha), np.sin(alpha), theta_dot, alpha_dot])
+        
+        ob = np.array([
+            np.cos(theta),
+            np.sin(theta),
+            np.cos(alpha),
+            np.sin(alpha),
+            theta_dot,
+            alpha_dot,
+        ])
+        return ob
 
     def _get_obs(self):
         return np.concatenate([self.sim.data.qpos, self.sim.data.qvel]).ravel()

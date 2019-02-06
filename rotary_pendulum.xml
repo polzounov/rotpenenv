@@ -67,11 +67,11 @@ Constants:
 			<!-- pos x=0, y=0, z=mid of hub to mid of rotary top; mass is approximated ~= 0.0876... rotation = facing to front - FIND THE CORRECT QUATERNION!!! -->
 			<geom name="rotary_arm_hub" rgba="1 0 0 1" pos="0 -0.006 0.013" size="0.012 0.026" quat="0 0 0.707 0.707" mass="0.0875" type="cylinder"/>
 
-			<body name="pendulum_and_arm" pos="0 0 0.013">
+			<body name="pendulum_and_arm_body" pos="0 0 0.013">
 				<!-- The arm of the qube, is Lr = 0.085m (facing front), radius = 0.0325, mass = 0.095, and moment of inertia of Jr = 0.00005719792  - - - NOTE: I think the moment of inertia is wrong... it uses the combined mass of the arm and the heavy red rotary_arm_hub and assumes they are spread through the arm equally... -->
 				<geom fromto="0 0 0 0 -0.085 0" name="arm" rgba="0.7 0.7 0.7 1" size="0.00325 0.085" mass="0.0075" type="cylinder"/>
 
-				<body name="pendulum" pos="0 -0.085 0">
+				<body name="pendulum_body" pos="0 -0.085 0">
 					<joint axis="0 1 0" name="arm_pendulum_hinge" pos="0 0 0" damping="0.0005" type="hinge"/>
 					<!-- The pendulum of the qube, is Lp = 0.129m, 0.008m above the centre of the joint and 0.121m below the centre of the joint, radius = 0.0475, mp = 0.024kg, and moment of inertia of Jr = 0.000033282 -->
 					<geom fromto="0 0 0.008 0 0 -0.121" name="pendulum" rgba="1 0 0 1" size="0.00475 0.129" mass="0.024" type="capsule"/>
