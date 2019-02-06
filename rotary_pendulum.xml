@@ -1,0 +1,89 @@
+<!-- Cartpole Model
+
+		The state space is populated with joints in the order that they are
+		defined in this file. The actuators also operate on joints.
+
+		State-Space (name/joint/parameter):
+				- cart      slider      position (m)
+				- pole      hinge       angle (rad)
+				- cart      slider      velocity (m/s)
+				- pole      hinge       angular velocity (rad/s)
+
+		Actuators (name/actuator/parameter):
+				- cart      motor       force x (N)
+
+
+
+Constants:
+	# Motor
+	Rm = 8.4  # Resistance
+	kt = 0.042  # Current-torque (N-m/A)
+	km = 0.042  # Back-emf constant (V-s/rad)
+
+	# Rotary Arm
+	mr = 0.095  # Mass (kg)
+	Lr = 0.085  # Total length (m)
+	Jr = mr * Lr**2 / 12  # Moment of inertia about pivot (kg-m^2)
+	Dr = 0.0015  # Equivalent viscous damping coefficient (N-m-s/rad)
+
+	# Pendulum Link
+	mp = 0.024  # Mass (kg)
+	Lp = 0.129  # Total length (m)
+	Jp = mp * Lp**2 / 12  # Moment of inertia about pivot (kg-m^2)
+	Dp = 0.0005  # Equivalent viscous damping coefficient (N-m-s/rad)
+
+	g = 9.81  # Gravity constant
+
+-->
+<mujoco model="cartpole">
+	<compiler coordinate="local" inertiafromgeom="true"/>
+	<custom>
+		<numeric data="2" name="frame_skip"/>
+	</custom>
+	<default>
+		<joint damping="0.0005"/>
+		<!-- <geom contype="0" friction="1 0.1 0.1" rgba="0.7 0.7 0 1"/> -->
+	</default>
+	<asset>
+		<texture type="skybox" builtin="gradient" width="100" height="100" rgb1="0.5 0.5 0.5" />
+	</asset>
+	<option gravity="0 0 -9.81" integrator="RK4" timestep="0.001"/>
+	<size nstack="3000"/>
+	<worldbody>
+
+		<!-- Assume pendulum is x,y,z = 0.102m, 0.102m, 0.101m; should add textures -->
+		<!-- Note all of these are halved -->
+		<geom name="qube_base" pos="0 0 0" rgba="0.1 0.1 0.1 1" size=".051 .051 .0505" type="box"/>
+
+
+		<!-- This is the part that spins - position it 0.102+ 1/2 * height of disk -->
+		<body name="rotary_pen" pos="0 0 0.05475">
+			<!-- Range of the rotation is from the stops (-120deg to +120deg) -->
+			<joint axis="0 0 1" name="rotary_top_hinge" range="-120 120" limited="true" damping="0.0015" type="hinge"/>
+
+			<!-- The part that spins - position is right on top of the qube -->
+			<geom name="rotary_top" rgba="0.7 0.7 0.7 1" size="0.0111 0.00375" mass="0.0106" type="cylinder"/>
+
+			<!-- pos x=0, y=0, z=mid of hub to mid of rotary top; mass is approximated ~= 0.0876... rotation = facing to front - FIND THE CORRECT QUATERNION!!! -->
+			<geom name="rotary_arm_hub" rgba="1 0 0 1" pos="0 -0.006 0.013" size="0.012 0.026" quat="0 0 0.707 0.707" mass="0.0875" type="cylinder"/>
+
+			<body name="pendulum_and_arm" pos="0 0 0.013">
+				<!-- The arm of the qube, is Lr = 0.085m (facing front), radius = 0.0325, mass = 0.095, and moment of inertia of Jr = 0.00005719792  - - - NOTE: I think the moment of inertia is wrong... it uses the combined mass of the arm and the heavy red rotary_arm_hub and assumes they are spread through the arm equally... -->
+				<geom fromto="0 0 0 0 -0.085 0" name="arm" rgba="0.7 0.7 0.7 1" size="0.00325 0.085" mass="0.0075" type="cylinder"/>
+
+				<body name="pendulum" pos="0 -0.085 0">
+					<joint axis="0 1 0" name="arm_pendulum_hinge" pos="0 0 0" damping="0.0005" type="hinge"/>
+					<!-- The pendulum of the qube, is Lp = 0.129m, 0.008m above the centre of the joint and 0.121m below the centre of the joint, radius = 0.0475, mp = 0.024kg, and moment of inertia of Jr = 0.000033282 -->
+					<geom fromto="0 0 0.008 0 0 -0.121" name="pendulum" rgba="1 0 0 1" size="0.00475 0.129" mass="0.024" type="capsule"/>
+				</body>
+			</body>
+		</body>
+
+	</worldbody>
+	<actuator>
+		<!-- Action range is between -3 and 3 (but should this be the voltage range??) - removed because this is limited in the other code... -->
+		<!-- <motor ctrllimited="true" ctrlrange="-3 3" gear="0.005" joint="rotary_top_hinge" name="slide"/> -->
+		<!-- Gear is 0.005 is proportional to tau = (km * (Vm - km * theta_dot)) / Rm ~= (km/Rm) * Vm. Gear = km/rm = 0.042/8.4 = 0.005 -->
+		<motor gear="0.005" joint="rotary_top_hinge" name="slide"/>
+	</actuator>
+</mujoco>
