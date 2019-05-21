@@ -57,7 +57,7 @@ def main():
         "flip": QubeFlipUpControl,
         "hold": QubeHoldControl,
     }
-    Controller = controllers_dict[args.controller]
+    controller = controllers_dict[args.controller]
 
     # Select Mujoco or PyBullet to run the simulation
     if args.pybullet:
@@ -68,8 +68,12 @@ def main():
         else:
             env = RotaryPendulumEnv()  # Mujoco env
 
+    run_simulation(env, controller)
+
+
+def run_simulation(env, controller):
     env.render(mode="human")  # Needed for pybullet for some reason...
-    ctrl_sys = Controller(env, frequency=args.frequency)  # Set the controller
+    ctrl_sys = controller(env, frequency=args.frequency)  # Set the controller
     obs = env.reset()  # Get the initial observation
 
     try:
