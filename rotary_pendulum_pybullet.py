@@ -5,12 +5,16 @@ from pybulletgym.envs.mujoco.env_bases import BaseBulletEnv
 import numpy as np
 import os
 
+
 class RotaryPendulumPyBulletRobot(MJCFBasedRobot):
-    '''The Mujoco MJCF-based robot'''
+    """The Mujoco MJCF-based robot"""
+
     def __init__(self, swingup=True):
         self.swingup = swingup
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        MJCFBasedRobot.__init__(self, dir_path+'/rotary_pendulum.xml', 'cart', action_dim=1, obs_dim=4)
+        MJCFBasedRobot.__init__(
+            self, dir_path + "/rotary_pendulum.xml", "cart", action_dim=1, obs_dim=4
+        )
 
     def robot_specific_reset(self, bullet_client):
         self._p = bullet_client
@@ -19,8 +23,8 @@ class RotaryPendulumPyBulletRobot(MJCFBasedRobot):
         self.rotary_top = self.jdict["rotary_top_hinge"]
         self.arm_pendulum_hinge = self.jdict["arm_pendulum_hinge"]
 
-        u = self.np_random.uniform(low=-.1, high=.1)
-        self.rotary_top.reset_current_position(u if not self.swingup else 3.1415+u , 0)
+        u = self.np_random.uniform(low=-0.1, high=0.1)
+        self.rotary_top.reset_current_position(u if not self.swingup else 3.1415 + u, 0)
 
         self.rotary_top.set_motor_torque(0)
 
@@ -31,23 +35,27 @@ class RotaryPendulumPyBulletRobot(MJCFBasedRobot):
 
         t_, theta, theta_dot = self.arm.current_position()
         a_, alpha, alpha_dot = self.pen.current_position()
-        print('\n\nself.arm.current_position()', self.arm.current_position())
-        print('self.pen.current_position()', self.pen.current_position())
+        print("\n\nself.arm.current_position()", self.arm.current_position())
+        print("self.pen.current_position()", self.pen.current_position())
 
         # Equivalents in Mujoco
         # qpos == np.array([theta, alpha]) == self.sim.data.qpos
         # qvel == np.array([theta_dot, alpha_dot]) == self.sim.data.qvel
-        return np.array([np.cos(theta),
-            np.sin(theta),
-            np.cos(alpha),
-            np.sin(alpha),
-            theta_dot,
-            alpha_dot,
-        ])
+        return np.array(
+            [
+                np.cos(theta),
+                np.sin(theta),
+                np.cos(alpha),
+                np.sin(alpha),
+                theta_dot,
+                alpha_dot,
+            ]
+        )
 
 
 class RotaryPendulumPyBulletEnv(BaseBulletEnv):
-    '''The environment that wraps the robot'''
+    """The environment that wraps the robot"""
+
     def __init__(self, frequency=1000, swingup=True):
         self.robot = RotaryPendulumPyBulletRobot(swingup=swingup)
         BaseBulletEnv.__init__(self, self.robot)
@@ -55,7 +63,9 @@ class RotaryPendulumPyBulletEnv(BaseBulletEnv):
         self.frequency = frequency
 
     def create_single_player_scene(self, bullet_client):
-        return SingleRobotEmptyScene(bullet_client, gravity=9.81, timestep=1/self.frequency, frame_skip=1)
+        return SingleRobotEmptyScene(
+            bullet_client, gravity=9.81, timestep=1 / self.frequency, frame_skip=1
+        )
 
     def _reset(self):
         if self.stateId >= 0:
@@ -86,4 +96,4 @@ class RotaryPendulumPyBulletEnv(BaseBulletEnv):
         return state, reward, False, {}
 
     def camera_adjust(self):
-        self.camera.move_and_look_at(0,1.2,1.2, 0,0,0.5)
+        self.camera.move_and_look_at(0, 1.2, 1.2, 0, 0, 0.5)
