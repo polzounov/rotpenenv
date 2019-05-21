@@ -59,7 +59,7 @@ Constants:
 		<!-- This is the part that spins - position it 0.102+ 1/2 * height of disk -->
 		<body name="rotary_pen" pos="0 0 0.05475">
 			<!-- Range of the rotation is from the stops (-120deg to +120deg) -->
-			<joint axis="0 0 1" name="rotary_top_hinge" range="-120 120" limited="true" damping="0.0015" type="hinge"/>
+			<joint axis="0 0 1" name="rotary_top_hinge" range="-120 120" limited="true" damping="0.0005" type="hinge"/>
 
 			<!-- The part that spins - position is right on top of the qube -->
 			<geom name="rotary_top" rgba="0.7 0.7 0.7 1" size="0.0111 0.00375" mass="0.0106" type="cylinder"/>
@@ -72,7 +72,7 @@ Constants:
 				<geom fromto="0 0 0 0 -0.085 0" name="arm" rgba="0.7 0.7 0.7 1" size="0.00325 0.085" mass="0.0075" type="cylinder"/>
 
 				<body name="pendulum_body" pos="0 -0.085 0">
-					<joint axis="0 1 0" name="arm_pendulum_hinge" pos="0 0 0" damping="0.0005" type="hinge"/>
+					<joint axis="0 1 0" name="arm_pendulum_hinge" pos="0 0 0" damping="0.00005" type="hinge"/>
 					<!-- The pendulum of the qube, is Lp = 0.129m, 0.008m above the centre of the joint and 0.121m below the centre of the joint, radius = 0.0475, mp = 0.024kg, and moment of inertia of Jr = 0.000033282 -->
 					<geom fromto="0 0 0.008 0 0 -0.121" name="pendulum" rgba="1 0 0 1" size="0.00475 0.129" mass="0.024" type="capsule"/>
 				</body>

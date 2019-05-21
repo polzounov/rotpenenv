@@ -1,6 +1,6 @@
 from __future__ import absolute_import, print_function, division
 from rotary_pendulum_pybullet import RotaryPendulumPyBulletEnv
-from rotary_pendulum import RotaryPendulumEnv
+from rotary_pendulum import RotaryPendulumEnv, RotaryPendulumSwingupEnv
 
 from gym_brt.control import NoControl, \
                             RandomControl, \
@@ -34,23 +34,24 @@ def main():
     if args.pybullet:
         env = RotaryPendulumPyBulletEnv() # PyBullet Env
     else:
-        env = RotaryPendulumEnv() # Mujoco env
+        if args.begin_down:
+            env = RotaryPendulumSwingupEnv() # Mujoco env
+        else:
+            env = RotaryPendulumEnv() # Mujoco env
 
     env.render(mode="human") # Needed for pybullet for some reason...
     ctrl_sys = Controller(env, frequency=args.frequency) # Set the controller
     obs = env.reset() # Get the initial observation
 
-    # Run the loop reseting every 3 seconds
-    step = 0
-    while True:
-        action = ctrl_sys.action(obs)
-        # action = env.action_space.sample()
-        obs, reward, _, _ = env.step(action)
-        env.render('human')
-        if step % (3 * args.frequency) == 0:
-            obs = env.reset()
-        step += 1
-
+    try:
+        while True:
+            action = ctrl_sys.action(obs)
+            obs, reward, done, _ = env.step(action)
+            env.render('human')
+            if done:
+                obs = env.reset()
+    finally:
+        env.close()
 
 if __name__ == '__main__':
     main()
